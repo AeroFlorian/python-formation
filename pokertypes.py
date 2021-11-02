@@ -9,7 +9,7 @@ class Color(Enum):
     CLUBS = 4
 
 
-class Value(Enum):
+class CardValues(Enum):
     TWO = 2
     THREE = 3
     FOUR = 4
@@ -39,34 +39,37 @@ class HandValues(Enum):
 
 
 class Card:
-    def __init__(self):
-        self.color = None
-        self.value = None
+    def __init__(self, value, color):
+        self.color = color
+        self.value = value
+
+    def __eq__(self, other):
+        return self.color == other.color and self.value == other.value
 
 
 def has_number_of(counter, number):
-    return len([x for x in counter.keys if counter[x] == number])
+    return len([x for x in counter.keys() if counter[x] == number])
 
 
 def take_value(card):
-    return card.value
+    return card.value.value
 
 
 def take_number_of(counter, number):
-    return [x for x in counter.keys if counter[x] == number][0]
+    return [x for x in counter.keys() if counter[x] == number][0]
 
 
 def take_pairs(counter):
-    return [x for x in counter.keys if counter[x] == 2]
+    return [x for x in counter.keys() if counter[x] == 2]
 
 
 class Hand:
-    def __init__(self):
-        self.cards = []
+    def __init__(self, cards):
+        self.cards = cards
 
     def compute_value(self):
         self.cards.sort(key=take_value)
-        values = [v.value for v in self.cards]
+        values = [v.value.value for v in self.cards]
         counter = Counter(values)
         number_of_pairs = has_number_of(counter, 2)
         has_threes = has_number_of(counter, 3)
@@ -75,7 +78,7 @@ class Hand:
         is_straight = all(values[i + 1] == values[i] + 1 for i in range(len(values) - 1))
         highest_card = self.cards[-1]
         if is_straight and is_color:
-            if highest_card.value == Value.ACE:
+            if highest_card.value == CardValues.ACE:
                 return HandValues.ROYAL_FLUSH
             return HandValues.STRAIGHT_FLUSH, highest_card
         if has_fours:
