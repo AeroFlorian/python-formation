@@ -1,5 +1,6 @@
 from enum import Enum
 from collections import Counter
+import random
 
 
 class Color(Enum):
@@ -96,3 +97,28 @@ class Hand:
         if number_of_pairs == 1:
             return HandValues.PAIR, take_pairs(counter), highest_card
         return HandValues.HIGH_CARD, highest_card
+
+
+class Deck:
+    def __init__(self):
+        self.cards = []
+
+    def fill_deck(self):
+        self.cards = []
+        for color in Color:
+            for value in CardValues:
+                self.cards.append(Card(color=color, value=value))
+
+    def pick_card(self):
+        if len(self.cards) == 0:
+            raise IndexError
+        j = random.randint(0, len(self.cards))
+        card = self.cards.pop(j)
+        return card
+
+    def pick_cards(self, number_of_cards):
+        i = 0
+        while i < number_of_cards:
+            card = self.pick_card()
+            yield card
+            i = i+1

@@ -92,6 +92,7 @@ def test_hand_full_house():
     hand = Hand(cards)
     assert (hand.compute_value() == (HandValues.FULL_HOUSE, CardValues.TWO.value))
 
+
 def test_hand_four_of_a_kind():
     cards = [Card(CardValues.TWO, Color.SPADES),
              Card(CardValues.TWO, Color.DIAMONDS),
@@ -112,3 +113,23 @@ def test_hand_straight_flush():
 
     hand = Hand(cards)
     assert (hand.compute_value() == (HandValues.STRAIGHT_FLUSH, Card(CardValues.SIX, Color.SPADES)))
+
+
+def test_fill_deck():
+    deck = Deck()
+    deck.fill_deck()
+    assert (len(deck.cards) == 52)
+
+
+def test_pick_one_card():
+    deck = Deck()
+    deck.fill_deck()
+    card = deck.pick_card()
+    assert (len(deck.cards) == 51)
+
+
+def test_combination():
+    deck = Deck()
+    deck.fill_deck()
+    cards = list(deck.pick_cards(5))
+    assert (len(cards) == 5 and len(deck.cards) == 47)
