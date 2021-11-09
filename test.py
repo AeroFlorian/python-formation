@@ -1,5 +1,6 @@
 import pytest
 from pokertypes import *
+import random
 
 
 def setup_module():
@@ -128,8 +129,72 @@ def test_pick_one_card():
     assert (len(deck.cards) == 51)
 
 
-def test_combination():
+def test_pick_cards():
     deck = Deck()
     deck.fill_deck()
+    cards_to_take = deck.pick_cards(5)
+    # verify pick_cards is a generator
+    assert (len(deck.cards) == 52)
+    card_list = list(cards_to_take)
+    assert (len(card_list) == 5 and len(deck.cards) == 47)
+
+
+def test_pick_too_many_cards():
+    deck = Deck()
+    deck.fill_deck()
+    cards_to_take = deck.pick_cards(53)
+    # verify pick_cards is a generator
+    assert (len(deck.cards) == 52)
+    card_list = []
+    try:
+        card_list = list(cards_to_take)
+        assert False
+    except IndexError:
+        assert (len(card_list) == 0 and len(deck.cards) == 0)
+
+
+def test_pick_4_cards_with_seed_0():
+    deck = Deck()
+    deck.fill_deck()
+    random.seed(0)
     cards = list(deck.pick_cards(5))
-    assert (len(cards) == 5 and len(deck.cards) == 47)
+    hand = Hand(cards)
+    assert (hand.compute_value() == (HandValues.HIGH_CARD, Card(CardValues.KING, Color.HEARTS)))
+
+
+def test_pick_4_cards_with_seed_10():
+    deck = Deck()
+    deck.fill_deck()
+    random.seed(10)
+    cards = list(deck.pick_cards(5))
+    hand = Hand(cards)
+    assert (hand.compute_value() == (HandValues.PAIR, [CardValues.FOUR.value], Card(CardValues.QUEEN, Color.DIAMONDS)))
+
+
+def test_table_pick_1_hand():
+    table = Table()
+    table.pick_hands(1)
+    assert (len(table.hands) == 1)
+    assert (len(table.deck.cards) == 47)
+
+
+def test_table_pick_2_hands_compare():
+    table = Table()
+    random.seed(10)
+    table.pick_hands(2)
+
+    assert (len(table.hands) == 2)
+    assert (len(table.deck.cards) == 42)
+    best_hand = table.compute_best()
+    assert (best_hand == (HandValues.PAIR, [CardValues.FOUR.value], Card(CardValues.QUEEN, Color.DIAMONDS)))
+
+
+def test_table_pick_4_hands_compare():
+    table = Table()
+    random.seed(10)
+    table.pick_hands(4)
+
+    assert (len(table.hands) == 4)
+    assert (len(table.deck.cards) == 32)
+    best_hand = table.compute_best()
+    assert (best_hand == (HandValues.TWO_PAIR, [CardValues.SIX.value, CardValues.ACE.value], Card(CardValues.ACE, Color.SPADES)))

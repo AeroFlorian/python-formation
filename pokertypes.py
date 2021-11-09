@@ -27,6 +27,9 @@ class CardValues(Enum):
 
 
 class HandValues(Enum):
+    def __lt__(self, other):
+        return self.value < other.value
+
     HIGH_CARD = 1
     PAIR = 2
     TWO_PAIR = 3
@@ -46,6 +49,9 @@ class Card:
 
     def __eq__(self, other):
         return self.color == other.color and self.value == other.value
+
+    def __repr__(self):
+        return "{} {}".format(self.value, self.color)
 
 
 def has_number_of(counter, number):
@@ -77,6 +83,8 @@ class Hand:
         has_fours = has_number_of(counter, 4)
         is_color = len(Counter([v.color for v in self.cards])) == 1
         is_straight = all(values[i + 1] == values[i] + 1 for i in range(len(values) - 1))
+        # issue here, example 2 queens and no higher cards, high card should not be a queen
+        # take high card not in combination
         highest_card = self.cards[-1]
         if is_straight and is_color:
             if highest_card.value == CardValues.ACE:
@@ -112,7 +120,7 @@ class Deck:
     def pick_card(self):
         if len(self.cards) == 0:
             raise IndexError
-        j = random.randint(0, len(self.cards))
+        j = random.randint(0, len(self.cards) - 1)
         card = self.cards.pop(j)
         return card
 
@@ -121,4 +129,21 @@ class Deck:
         while i < number_of_cards:
             card = self.pick_card()
             yield card
-            i = i+1
+            i = i + 1
+
+
+class Table:
+    def __init__(self):
+        self.hands = []
+        self.deck = Deck()
+        self.deck.fill_deck()
+
+    def compute_best(self):
+        hand_values = list(map(lambda x: x.compute_value(), self.hands))
+        print(" ")
+        print(hand_values)
+        return sorted(hand_values)[-1]
+
+    def pick_hands(self, number_of_hands):
+        for i in range(number_of_hands):
+            self.hands.append(Hand(list(self.deck.pick_cards(5))))
