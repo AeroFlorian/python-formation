@@ -1,7 +1,5 @@
 import sys
 import os
-
-sys.path.append(os.path.relpath('/..', os.getcwd()))
 from pathlib import Path
 sys.path.append(os.path.abspath(Path(__file__).parent.parent))
 from Step1_2.Card import Card, CardValues, Color
