@@ -10,6 +10,19 @@ def teardown_module():
     pass
 
 
+def test_card_hand_has_1_attribute():
+    hand = Hand([])
+    attributes = {'cards': []}
+    assert (attributes == hand.__dict__)
+
+
+def test_hand_has_2_methods():
+    hand = Hand([])
+    methods_attributes = [x for x in dir(hand) if x[0] != '_' and not (x in hand.__dict__)]
+    methods_wanted = ['compute_value', 'pick_card_with_value']
+    assert (methods_attributes == methods_wanted)
+
+
 def test_hand_high_card():
     cards = [Card(CardValues.TWO, Color.SPADES),
              Card(CardValues.THREE, Color.SPADES),
