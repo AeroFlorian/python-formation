@@ -70,9 +70,16 @@ def take_pairs(counter):
     return [x for x in counter.keys() if counter[x] == 2]
 
 
+def take_cards_not_in_pair(counter):
+    return [x for x in counter.keys() if counter[x] != 2]
+
+
 class Hand:
     def __init__(self, cards):
         self.cards = cards
+
+    def pick_card_with_value(self, value):
+        return [x for x in self.cards if x.value.value == value][0]
 
     def compute_value(self):
         self.cards.sort(key=take_value)
@@ -83,9 +90,8 @@ class Hand:
         has_fours = has_number_of(counter, 4)
         is_color = len(Counter([v.color for v in self.cards])) == 1
         is_straight = all(values[i + 1] == values[i] + 1 for i in range(len(values) - 1))
-        # issue here, example 2 queens and no higher cards, high card should not be a queen
-        # take high card not in combination
         highest_card = self.cards[-1]
+        highest_card_value_not_in_pair = sorted(take_cards_not_in_pair(counter))[-1]
         if is_straight and is_color:
             if highest_card.value == CardValues.ACE:
                 return HandValues.ROYAL_FLUSH
@@ -101,8 +107,10 @@ class Hand:
         if has_threes:
             return HandValues.THREE_OF_A_KIND, take_number_of(counter, 3)
         if number_of_pairs == 2:
+            highest_card = self.pick_card_with_value(highest_card_value_not_in_pair)
             return HandValues.TWO_PAIR, take_pairs(counter), highest_card
         if number_of_pairs == 1:
+            highest_card = self.pick_card_with_value(highest_card_value_not_in_pair)
             return HandValues.PAIR, take_pairs(counter), highest_card
         return HandValues.HIGH_CARD, highest_card
 
@@ -140,8 +148,6 @@ class Table:
 
     def compute_best(self):
         hand_values = list(map(lambda x: x.compute_value(), self.hands))
-        print(" ")
-        print(hand_values)
         return sorted(hand_values)[-1]
 
     def pick_hands(self, number_of_hands):

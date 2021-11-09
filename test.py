@@ -197,4 +197,4 @@ def test_table_pick_4_hands_compare():
     assert (len(table.hands) == 4)
     assert (len(table.deck.cards) == 32)
     best_hand = table.compute_best()
-    assert (best_hand == (HandValues.TWO_PAIR, [CardValues.SIX.value, CardValues.ACE.value], Card(CardValues.ACE, Color.SPADES)))
+    assert (best_hand == (HandValues.TWO_PAIR, [CardValues.SIX.value, CardValues.ACE.value], Card(CardValues.EIGHT, Color.CLUBS)))
